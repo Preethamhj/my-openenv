@@ -1,12 +1,11 @@
 ---
 title: My Openenv
-emoji: 🐠
+emoji: "🐠"
 colorFrom: purple
 colorTo: red
-sdk: gradio
-sdk_version: 6.11.0
-app_file: app.py
+sdk: docker
+app_port: 7860
 pinned: false
 ---
 
-Check out the configuration reference at https://huggingface.co/docs/hub/spaces-config-reference
+OpenEnv hackathon environment deployed as a Docker Space.
