@@ -1,12 +1,14 @@
-# Hard grader logic
-def grade(pred):
+def grade(pred: str, stage: dict) -> float:
+    text = (pred or "").lower()
     score = 0.0
 
-    if "isolate" in pred.lower():
-        score += 0.4
-    if "revoke" in pred.lower():
-        score += 0.3
-    if "patch" in pred.lower():
-        score += 0.3
+    if any(keyword.lower() in text for keyword in stage["expected_keywords"]):
+        score += stage["reward"]["partial"]
+    if any(keyword.lower() in text for keyword in stage["reasoning_keywords"]):
+        score += stage["reward"]["reasoning"]
+    if any(keyword.lower() in text for keyword in stage["completion_keywords"]):
+        score += stage["reward"]["completion"]
+    if any(keyword.lower() in text for keyword in stage["penalty_keywords"]):
+        score -= stage["reward"]["penalty"]
 
-    return min(score, 1.0)
+    return min(max(score, 0.0), 1.0)
