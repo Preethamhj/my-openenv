@@ -1,0 +1,15 @@
+[build-system]
+requires = ["setuptools>=68", "wheel"]
+build-backend = "setuptools.build_meta"
+
+[project]
+name = "my-openenv"
+version = "0.1.0"
+description = "OpenEnv hackathon environment"
+requires-python = ">=3.10"
+
+[tool.setuptools]
+py-modules = ["app", "inference"]
+
+[tool.setuptools.packages.find]
+include = ["env*", "models*", "graders*"]

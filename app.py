@@ -1,16 +1,12 @@
-import sys
-import os
-
-# ✅ FORCE Python to see /app as root
-sys.path.append("/app")
-
 from fastapi import FastAPI
+
 from env.environment import CyberEnv
 
-app = FastAPI()
+app = FastAPI(title="OpenEnv Space")
 env = CyberEnv()
+
 
 @app.post("/reset")
 def reset():
-    obs = env.reset()
-    return obs.dict()
+    observation = env.reset()
+    return observation.model_dump()
