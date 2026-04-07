@@ -7,9 +7,19 @@ name = "my-openenv"
 version = "0.1.0"
 description = "OpenEnv hackathon environment"
 requires-python = ">=3.10"
+dependencies = [
+    "fastapi",
+    "openai",
+    "openenv-core>=0.2.0",
+    "pydantic",
+    "uvicorn",
+]
+
+[project.scripts]
+server = "server.app:main"
 
 [tool.setuptools]
 py-modules = ["app", "inference"]
 
 [tool.setuptools.packages.find]
-include = ["env*", "models*", "graders*"]
+include = ["env*", "models*", "graders*", "server*"]
