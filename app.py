@@ -1,11 +1,11 @@
 import sys
 import os
 
-# ✅ CRITICAL FIX — add project root to path
-sys.path.insert(0, os.path.abspath(os.path.dirname(__file__)))
+# ✅ FORCE Python to see /app as root
+sys.path.append("/app")
 
 from fastapi import FastAPI
-from env.environment import CyberEnv 
+from env.environment import CyberEnv
 
 app = FastAPI()
 env = CyberEnv()
