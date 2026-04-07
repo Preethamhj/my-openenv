@@ -1,0 +1,10 @@
+name: cyberops-env
+description: Simple cybersecurity simulation environment
+
+observation_space:
+  type: dict
+
+action_space:
+  type: dict
+
+reward_range: [0, 1]
