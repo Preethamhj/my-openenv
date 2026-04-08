@@ -3,9 +3,11 @@ import random
 from models.observation import Observation
 
 from graders.grader_easy import grade as grade_easy
+from graders.grader_expert import grade as grade_expert
 from graders.grader_medium import grade as grade_medium
 from graders.grader_hard import grade as grade_hard
 from env.tasks.task_easy import build_easy_scenario
+from env.tasks.task_expert import build_expert_scenario
 from env.tasks.task_medium import build_medium_scenario
 from env.tasks.task_hard import build_hard_scenario
 
@@ -32,6 +34,7 @@ class CyberEnv:
             "easy": build_easy_scenario,
             "medium": build_medium_scenario,
             "hard": build_hard_scenario,
+            "expert": build_expert_scenario,
         }
         return builders[task_name](difficulty_level)
 
@@ -61,7 +64,7 @@ class CyberEnv:
         self.done = False
         self.history = []
         self.stage_index = 0
-        self.task = random.choice(["easy", "medium", "hard"])
+        self.task = random.choice(["easy", "medium", "hard", "expert"])
         self.current_scenario = self._build_scenario(self.task)
         return self._build_observation()
 
@@ -73,6 +76,7 @@ class CyberEnv:
             "easy": grade_easy,
             "medium": grade_medium,
             "hard": grade_hard,
+            "expert": grade_expert,
         }
         reward = graders[self.task](text, stage)
 

@@ -23,6 +23,7 @@ CyberOps OpenEnv provides three realistic cybersecurity workflows:
 - Easy: Credential-stuffing triage on an internet-facing bastion host
 - Medium: Vulnerability prioritization and mitigation for an exposed VPN gateway
 - Hard: Ransomware precursor investigation with containment and recovery
+- Expert: Cloud control-plane compromise with identity containment and recovery
 
 Each task is multi-step and stateful. The environment tracks:
 
@@ -40,6 +41,7 @@ Instead of rewarding one-shot answers, each scenario is broken into 2-4 stages:
 - Easy: detect -> prioritize -> mitigate
 - Medium: detect -> prioritize -> mitigate
 - Hard: detect -> analyze -> mitigate -> recover
+- Expert: detect -> analyze -> mitigate -> recover
 
 An agent must progress through the stages with coherent responses. The environment only advances when the current stage is handled well enough, which makes the benchmark useful for testing sequential reasoning rather than keyword matching alone.
 
@@ -93,7 +95,7 @@ The environment is designed to remain lightweight while still surfacing richer r
 
 This project preserves all hackathon requirements:
 
-- 3 tasks across easy / medium / hard
+- 4 tasks across easy / medium / hard / expert
 - Typed Pydantic observations and actions
 - `reset`, `step`, and `state` methods implemented
 - Reward bounded in `[0, 1]`

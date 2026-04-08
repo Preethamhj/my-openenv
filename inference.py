@@ -61,6 +61,10 @@ def fallback_action(obs):
         ("hard", "analyze"): "Scope this as domain-admin-enabled lateral movement across the payments environment with major revenue and customer impact.",
         ("hard", "mitigate"): "Isolate affected hosts, revoke compromised privileged accounts, disable malicious access paths, and block the command-and-control IOC.",
         ("hard", "recover"): "Restore clean systems from backups, validate eradication with forensic review, patch gaps, rotate credentials, and increase monitoring.",
+        ("expert", "detect"): "Detect a cloud control-plane compromise involving anomalous AssumeRole activity, new access keys, and IAM privilege escalation.",
+        ("expert", "analyze"): "Scope this as a multi-account IAM compromise with persistence and possible access to S3, secrets, and other cloud control-plane assets.",
+        ("expert", "mitigate"): "Disable the malicious access keys, revoke active sessions, quarantine privileged identities, and restrict privilege escalation with organization guardrails.",
+        ("expert", "recover"): "Audit IAM changes, rotate credentials, enforce MFA and least privilege, validate logging coverage, and review long-term guardrails.",
     }
     return scripted_actions.get((obs.task, stage), "Analyze the incident, explain the risk, and take the safest next containment action.")
 
