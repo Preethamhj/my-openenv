@@ -22,4 +22,4 @@ server = "server.app:main"
 py-modules = ["app", "inference"]
 
 [tool.setuptools.packages.find]
-include = ["env*", "models*", "graders*", "server*"]
+include = ["env*", "models*", "graders*", "server*", "tasks*"]

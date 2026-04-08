@@ -1,6 +1,18 @@
 name: cyberops-env
 description: Simple cybersecurity simulation environment
 
+tasks:
+  - easy
+  - medium
+  - hard
+  - expert
+
+graders:
+  easy: graders.grader_easy:grade
+  medium: graders.grader_medium:grade
+  hard: graders.grader_hard:grade
+  expert: graders.grader_expert:grade
+
 observation_space:
   type: dict
 

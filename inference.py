@@ -70,46 +70,55 @@ def fallback_action(obs):
 
 
 def get_action(obs):
-    if HF_TOKEN and client is not None:
-        try:
-            prompt = build_structured_prompt(obs)
-            res = client.chat.completions.create(
-                model=MODEL_NAME,
-                messages=[
-                    {"role": "system", "content": "You are a concise incident responder. Provide one actionable response sentence."},
-                    {"role": "user", "content": prompt},
-                ],
-                max_tokens=120,
-                temperature=0.2,
-            )
-            text = (res.choices[0].message.content or "").strip()
-            if text:
-                return text
-        except Exception:
-            pass
+    if client is not None:
+        if not HF_TOKEN:
+            raise RuntimeError("HF_TOKEN environment variable is required for inference.")
+
+        prompt = build_structured_prompt(obs)
+        res = client.chat.completions.create(
+            model=MODEL_NAME,
+            messages=[
+                {"role": "system", "content": "You are a concise incident responder. Provide one actionable response sentence."},
+                {"role": "user", "content": prompt},
+            ],
+            max_tokens=120,
+            temperature=0.2,
+        )
+        text = (res.choices[0].message.content or "").strip()
+        if text:
+            return text
 
     return fallback_action(obs)
 
 
 def main():
-    obs = env.reset()
     rewards = []
     steps = 0
+    success = False
+    obs = None
 
-    log_start(obs.task, "cyberops", MODEL_NAME)
+    try:
+        obs = env.reset()
+        log_start(obs.task, "cyberops", MODEL_NAME)
 
-    for step in range(1, MAX_STEPS + 1):
-        action_text = get_action(obs)
-        obs, reward, done, _ = env.step({"action": action_text})
-        rewards.append(reward)
-        steps = step
-        log_step(step, action_text, reward, done)
-        if done:
-            break
+        for step in range(1, MAX_STEPS + 1):
+            action_text = get_action(obs)
+            obs, reward, done, _ = env.step({"action": action_text})
+            rewards.append(reward)
+            steps = step
+            log_step(step, action_text, reward, done)
+            if done:
+                break
 
-    score = min(max(sum(rewards) / len(rewards), 0.0), 1.0) if rewards else 0.0
-    success = score >= 0.5
-    log_end(success, steps, score, rewards)
+        score = min(max(sum(rewards) / len(rewards), 0.0), 1.0) if rewards else 0.0
+        success = score >= 0.5
+    except Exception:
+        score = min(max(sum(rewards) / len(rewards), 0.0), 1.0) if rewards else 0.0
+        success = False
+        raise
+    finally:
+        score = min(max(sum(rewards) / len(rewards), 0.0), 1.0) if rewards else 0.0
+        log_end(success, steps, score, rewards)
 
 
 if __name__ == "__main__":
