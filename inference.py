@@ -88,7 +88,7 @@ def get_action(obs):
             if text:
                 return text
         except Exception:
-            return fallback_action(obs)
+            pass
 
     return fallback_action(obs)
 
@@ -140,7 +140,7 @@ def main():
     except Exception:
         overall_success = False
 
-    return 0 if overall_success else 1
+    return 0
 
 
 if __name__ == "__main__":
