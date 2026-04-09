@@ -5,14 +5,13 @@ try:
 except ImportError:
     OpenAI = None
 
-from env.environment import CyberEnv
+from env.environment import CyberEnv, TASK_REGISTRY
 
 API_BASE_URL = os.getenv("API_BASE_URL") or "https://router.huggingface.co/v1"
 HF_TOKEN = os.getenv("HF_TOKEN") or ""
 MODEL_NAME = os.getenv("MODEL_NAME") or "Qwen/Qwen2.5-72B-Instruct"
 
 client = OpenAI(base_url=API_BASE_URL, api_key=HF_TOKEN) if OpenAI else None
-env = CyberEnv()
 
 MAX_STEPS = 6
 
@@ -91,7 +90,8 @@ def get_action(obs):
     return fallback_action(obs)
 
 
-def main():
+def run_task(task_name):
+    env = CyberEnv(task_name=task_name)
     rewards = []
     steps = 0
     success = False
@@ -120,6 +120,22 @@ def main():
         score = min(max(sum(rewards) / len(rewards), 0.0), 1.0) if rewards else 0.0
         log_end(success, steps, score, rewards)
 
+    return success, steps, score, rewards
+
+
+def main():
+    overall_success = True
+    task_names = ["easy", "medium", "hard"]
+
+    for task_name in task_names:
+        success, _, _, _ = run_task(task_name)
+        overall_success = overall_success and success
+
+    if "expert" in TASK_REGISTRY:
+        run_task("expert")
+
+    return 0 if overall_success else 1
+
 
 if __name__ == "__main__":
-    main()
+    raise SystemExit(main())
