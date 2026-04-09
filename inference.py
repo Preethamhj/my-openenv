@@ -71,21 +71,24 @@ def fallback_action(obs):
 def get_action(obs):
     if client is not None:
         if not HF_TOKEN:
-            raise RuntimeError("HF_TOKEN environment variable is required for inference.")
+            return fallback_action(obs)
 
-        prompt = build_structured_prompt(obs)
-        res = client.chat.completions.create(
-            model=MODEL_NAME,
-            messages=[
-                {"role": "system", "content": "You are a concise incident responder. Provide one actionable response sentence."},
-                {"role": "user", "content": prompt},
-            ],
-            max_tokens=120,
-            temperature=0.2,
-        )
-        text = (res.choices[0].message.content or "").strip()
-        if text:
-            return text
+        try:
+            prompt = build_structured_prompt(obs)
+            res = client.chat.completions.create(
+                model=MODEL_NAME,
+                messages=[
+                    {"role": "system", "content": "You are a concise incident responder. Provide one actionable response sentence."},
+                    {"role": "user", "content": prompt},
+                ],
+                max_tokens=120,
+                temperature=0.2,
+            )
+            text = (res.choices[0].message.content or "").strip()
+            if text:
+                return text
+        except Exception:
+            return fallback_action(obs)
 
     return fallback_action(obs)
 
@@ -126,13 +129,16 @@ def run_task(task_name):
 def main():
     overall_success = True
     task_names = ["easy", "medium", "hard"]
+    try:
+        for task_name in task_names:
+            success, _, _, _ = run_task(task_name)
+            overall_success = overall_success and success
 
-    for task_name in task_names:
-        success, _, _, _ = run_task(task_name)
-        overall_success = overall_success and success
-
-    if "expert" in TASK_REGISTRY:
-        run_task("expert")
+        if "expert" in TASK_REGISTRY:
+            success, _, _, _ = run_task("expert")
+            overall_success = overall_success and success
+    except Exception:
+        overall_success = False
 
     return 0 if overall_success else 1
 
