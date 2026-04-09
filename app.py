@@ -3,6 +3,7 @@ from fastapi import FastAPI
 from env.environment import CyberEnv
 from env.tasks import TASK_BUILDERS
 from graders import GRADERS
+from models.action import Action
 
 app = FastAPI(title="OpenEnv Space")
 env = CyberEnv()
@@ -12,6 +13,22 @@ env = CyberEnv()
 def reset():
     observation = env.reset()
     return observation.model_dump()
+
+
+@app.post("/step")
+def step(action: Action):
+    observation, reward, done, info = env.step(action.model_dump())
+    return {
+        "observation": observation.model_dump(),
+        "reward": reward,
+        "done": done,
+        "info": info,
+    }
+
+
+@app.get("/state")
+def state():
+    return env.state()
 
 
 @app.get("/")
