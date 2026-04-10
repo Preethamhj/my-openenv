@@ -62,12 +62,14 @@ class CyberEnv:
 
         return Observation(task=self.task, data=data)
 
-    def reset(self):
+    def reset(self, task: str | None = None):
         self.done = False
         self.history = []
         self.stage_index = 0
         available_tasks = list(TASK_REGISTRY.keys())
-        self.task = self.task_name or random.choice(available_tasks)
+        if task is not None and task not in TASK_REGISTRY:
+            raise ValueError(f"Unknown task '{task}'. Expected one of: {', '.join(available_tasks)}")
+        self.task = task or self.task_name or random.choice(available_tasks)
         self.current_scenario = self._build_scenario(self.task)
         return self._build_observation()
 

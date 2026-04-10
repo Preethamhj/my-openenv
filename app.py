@@ -10,8 +10,8 @@ env = CyberEnv()
 
 
 @app.post("/reset")
-def reset():
-    observation = env.reset()
+def reset(task: str | None = None):
+    observation = env.reset(task=task)
     return observation.model_dump()
 
 
@@ -29,6 +29,11 @@ def step(action: Action):
 @app.get("/state")
 def state():
     return env.state()
+
+
+@app.get("/trace")
+def trace():
+    return {"history": env.history, "task": env.task, "done": env.done}
 
 
 @app.get("/")
@@ -52,6 +57,7 @@ def list_tasks():
                 "difficulty": task_name,
                 "num_stages": len(scenario["stages"]),
                 "grader": task_name in GRADERS,
+                "stages": [stage["name"] for stage in scenario["stages"]],
             }
         )
     return {"tasks": tasks}

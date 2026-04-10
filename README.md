@@ -18,7 +18,7 @@ Modern security teams do not solve incidents in a single answer. Analysts must d
 
 ## Environment Design
 
-CyberOps OpenEnv provides three realistic cybersecurity workflows:
+CyberOps OpenEnv provides four realistic cybersecurity workflows:
 
 - Easy: Credential-stuffing triage on an internet-facing bastion host
 - Medium: Vulnerability prioritization and mitigation for an exposed VPN gateway
@@ -33,6 +33,46 @@ Each task is multi-step and stateful. The environment tracks:
 - Adaptive difficulty signal based on recent performance
 
 The observation returned by the environment includes realistic SOC context such as timestamps, IP addresses, asset criticality, blast radius, constraints, and prior actions.
+
+## Action And Observation Spaces
+
+### Action space
+
+The action space is a typed Pydantic model:
+
+```python
+class Action(BaseModel):
+    action: str
+```
+
+Agents provide one concise response per step describing the next security action, prioritization, or recovery plan.
+
+### Observation space
+
+The observation space is also typed and returns structured SOC context:
+
+```python
+class Observation(BaseModel):
+    task: str
+    data: ObservationData
+```
+
+`ObservationData` can include:
+
+- `title`
+- `difficulty_level`
+- `step`
+- `progress`
+- `stage_name`
+- `instruction`
+- `history`
+- `logs`
+- `report`
+- `incident`
+- `business_context`
+- `constraints`
+
+This keeps the benchmark readable for humans while still being structured enough for agent pipelines.
 
 ## Multi-Step Reasoning
 
@@ -91,6 +131,10 @@ The environment is designed to remain lightweight while still surfacing richer r
 - Typical agent score: near-perfect with deterministic fallback
 - Evaluation focus: multi-step cyber reasoning, not just surface classification
 
+### Baseline behavior
+
+The provided `inference.py` runs deterministically across the named tasks (`easy`, `medium`, `hard`, and `expert`) and emits reproducible structured logs. In fallback mode it typically completes episodes with strong non-zero reward on all supported tasks while staying well within the runtime budget.
+
 ## Interface Compatibility
 
 This project preserves all hackathon requirements:
@@ -98,10 +142,53 @@ This project preserves all hackathon requirements:
 - 4 tasks across easy / medium / hard / expert
 - Typed Pydantic observations and actions
 - `reset`, `step`, and `state` methods implemented
+- Optional task-specific reset support for deterministic evaluation
 - Reward bounded in `[0, 1]`
 - FastAPI app exposing `POST /reset`
 - Docker-compatible deployment
 - Existing inference logging format preserved
+
+## Setup And Usage
+
+### Local setup
+
+```bash
+pip install -r requirements.txt
+```
+
+### Run the API locally
+
+```bash
+uvicorn app:app --host 0.0.0.0 --port 7860
+```
+
+### Start an episode
+
+```bash
+curl -X POST http://localhost:7860/reset
+```
+
+### Start a specific task deterministically
+
+```bash
+curl -X POST "http://localhost:7860/reset?task=hard"
+```
+
+### Step through an episode
+
+```bash
+curl -X POST http://localhost:7860/step \
+  -H "Content-Type: application/json" \
+  -d "{\"action\": \"Isolate affected hosts and revoke compromised access.\"}"
+```
+
+### Inspect current state
+
+```bash
+curl http://localhost:7860/state
+curl http://localhost:7860/trace
+curl http://localhost:7860/tasks
+```
 
 ## Why This Stands Out
 
