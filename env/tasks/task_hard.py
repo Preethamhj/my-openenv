@@ -16,6 +16,8 @@ def build_hard_scenario(difficulty_level: int) -> dict:
                 "reasoning_keywords": ["domain admin", "lateral movement", "c2"],
                 "completion_keywords": ["isolate", "contain", "incident"],
                 "penalty_keywords": ["false positive", "benign"],
+                "ordered_keywords_groups": [["powershell", "credential theft"], ["encrypted", "ransomware"], ["isolate", "contain"]],
+                "requires_explanation": True,
                 "reward": {"partial": 0.2, "reasoning": 0.2, "completion": 0.2, "penalty": 0.1},
                 "observation": {
                     "incident": {
@@ -36,6 +38,8 @@ def build_hard_scenario(difficulty_level: int) -> dict:
                 "reasoning_keywords": ["credential dumping", "smb", "exfiltration", "blast radius"],
                 "completion_keywords": ["scope", "timeline", "priority"],
                 "penalty_keywords": ["single host only", "no impact"],
+                "ordered_keywords_groups": [["payments"], ["lateral movement", "blast radius"], ["scope", "priority"]],
+                "requires_explanation": True,
                 "reward": {"partial": 0.2, "reasoning": 0.2, "completion": 0.2, "penalty": 0.1},
                 "observation": {
                     "business_context": {
@@ -52,6 +56,8 @@ def build_hard_scenario(difficulty_level: int) -> dict:
                 "reasoning_keywords": ["segmentation", "ioc", "credential rotation"],
                 "completion_keywords": ["edr", "firewall", "disable", "quarantine"],
                 "penalty_keywords": ["leave online", "monitor only"],
+                "ordered_keywords_groups": [["isolate"], ["revoke", "disable"], ["block", "quarantine"]],
+                "requires_explanation": True,
                 "reward": {"partial": 0.15, "reasoning": 0.15, "completion": 0.3, "penalty": 0.1},
                 "observation": {
                     "constraints": [
@@ -67,6 +73,8 @@ def build_hard_scenario(difficulty_level: int) -> dict:
                 "reasoning_keywords": ["backup", "forensics", "lessons learned"],
                 "completion_keywords": ["recover", "rotate", "rebuild", "mfa"],
                 "penalty_keywords": ["resume immediately", "skip validation"],
+                "ordered_keywords_groups": [["restore"], ["validate", "forensics"], ["rotate", "mfa"]],
+                "requires_explanation": True,
                 "reward": {"partial": 0.15, "reasoning": 0.15, "completion": 0.35, "penalty": 0.1},
                 "observation": {
                     "recovery_targets": impacted_hosts,

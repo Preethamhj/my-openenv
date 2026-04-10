@@ -102,7 +102,22 @@ This design gives meaningful intermediate feedback while still rewarding end-to-
 - Adaptive difficulty that increases or simplifies scenario complexity based on agent behavior
 - Realistic enterprise-style observations with infrastructure, business, and incident context
 - Hybrid agent execution with structured prompting and deterministic fallback
+- Ordered reward shaping that scores coverage of analyst reasoning and response sequencing
+- A deceptive cloud-control-plane scenario that forces agents to separate legitimate automation from true privilege-escalation abuse
 - Validator-safe implementation that remains fast enough for low-compute hackathon execution
+
+## Architecture
+
+The benchmark is intentionally split into reusable layers:
+
+- `env/`: stateful environment logic and task registry
+- `env/tasks/`: scenario definitions and progression metadata
+- `graders/`: deterministic task graders with shaped rewards
+- `app.py` and `server/`: API surface and deployment compatibility wrappers
+- `inference.py`: deterministic benchmark runner plus optional LLM-backed reasoning
+- `benchmarks/` and `results/`: reproducible baseline artifacts
+
+This separation makes it easy to add new task packs without rewriting the environment runtime.
 
 ## Agent Design
 
@@ -135,6 +150,27 @@ The environment is designed to remain lightweight while still surfacing richer r
 
 The provided `inference.py` runs deterministically across the named tasks (`easy`, `medium`, `hard`, and `expert`) and emits reproducible structured logs. In fallback mode it typically completes episodes with strong non-zero reward on all supported tasks while staying well within the runtime budget.
 
+### Baseline snapshot
+
+| Task   | Steps | Score | Notes |
+|--------|------:|------:|-------|
+| Easy   | 3     | 0.68  | Detects brute-force pattern and completes mitigation sequence |
+| Medium | 3     | 0.62  | Prioritizes RCE risk and produces mitigation plan |
+| Hard   | 4     | 0.51  | Handles detection, analysis, containment, and recovery |
+| Expert | 4     | 0.61  | Distinguishes control-plane compromise from noisy cloud automation |
+
+The full reproducible artifact is stored in `results/baseline_results.json`.
+
+## Failure Modes We Want To Expose
+
+This benchmark is designed to reveal weaknesses in frontier agents, not just validate trivial success:
+
+- confusing noisy but benign automation with true cloud compromise
+- under-prioritizing incidents with large blast radius
+- jumping straight to mitigation without explaining business impact
+- skipping recovery validation and post-incident hardening
+- proposing destructive actions that trade operational continuity for shallow confidence
+
 ## Interface Compatibility
 
 This project preserves all hackathon requirements:
@@ -154,6 +190,18 @@ This project preserves all hackathon requirements:
 
 ```bash
 pip install -r requirements.txt
+```
+
+### Run the deterministic benchmark
+
+```bash
+python benchmarks/run_benchmark.py
+```
+
+### Run lightweight checks
+
+```bash
+python -m unittest discover -s tests
 ```
 
 ### Run the API locally

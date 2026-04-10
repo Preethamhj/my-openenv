@@ -26,8 +26,11 @@ def build_expert_scenario(difficulty_level: int) -> dict:
                             "2026-04-08T03:13:42Z CreateAccessKey for svc-backup-sync from 45.83.64.21",
                         ],
                         "affected_regions": affected_regions,
+                        "false_positive_hint": "The backup sync role legitimately creates snapshots every night, but it should never receive AdministratorAccess or issue new access keys.",
                     }
                 },
+                "ordered_keywords_groups": [["assumerole", "sts", "access key"], ["privilege escalation", "administratoraccess"], ["incident", "flag"]],
+                "requires_explanation": True,
             },
             {
                 "name": "analyze",
@@ -42,8 +45,11 @@ def build_expert_scenario(difficulty_level: int) -> dict:
                         "critical_assets": ["customer-data-archive", "terraform-state", "prod-secrets"],
                         "org_accounts": 6 + difficulty_level,
                         "customer_impact": "possible data exposure and control-plane persistence",
+                        "tradeoff": "Aggressive IAM containment lowers exfiltration risk but may break deployment automation for 15 minutes.",
                     }
                 },
+                "ordered_keywords_groups": [["iam", "privilege escalation"], ["s3", "secrets", "multi-account"], ["risk", "scope"]],
+                "requires_explanation": True,
             },
             {
                 "name": "mitigate",
@@ -59,6 +65,8 @@ def build_expert_scenario(difficulty_level: int) -> dict:
                         "Security leadership approved aggressive identity containment.",
                     ]
                 },
+                "ordered_keywords_groups": [["disable", "revoke"], ["quarantine", "contain"], ["scp", "restrict"]],
+                "requires_explanation": True,
             },
             {
                 "name": "recover",
@@ -71,6 +79,8 @@ def build_expert_scenario(difficulty_level: int) -> dict:
                 "observation": {
                     "recovery_targets": ["iam users", "federation roles", "organization guardrails"],
                 },
+                "ordered_keywords_groups": [["audit", "forensics"], ["rotate", "mfa"], ["monitor", "review"]],
+                "requires_explanation": True,
             },
         ],
     }

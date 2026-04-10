@@ -25,6 +25,8 @@ def build_easy_scenario(difficulty_level: int) -> dict:
                 "reasoning_keywords": ["brute force", "credential stuffing", "repeated"],
                 "completion_keywords": ["identify", "detect", "flag", "block"],
                 "penalty_keywords": ["allow", "ignore", "safe"],
+                "ordered_keywords_groups": [["185.199.110.17"], ["brute force", "credential stuffing"], ["block", "flag"]],
+                "requires_explanation": True,
                 "reward": {"partial": 0.25, "reasoning": 0.2, "completion": 0.25, "penalty": 0.15},
                 "observation": {
                     "alert": "SOC triage alert: repeated SSH authentication failures on bastion-1.",
@@ -39,6 +41,8 @@ def build_easy_scenario(difficulty_level: int) -> dict:
                 "reasoning_keywords": ["internet-facing", "root", "lateral movement"],
                 "completion_keywords": ["escalate", "contain", "ticket", "priority"],
                 "penalty_keywords": ["low priority", "close alert"],
+                "ordered_keywords_groups": [["internet-facing", "bastion"], ["root", "lateral movement"], ["escalate", "contain"]],
+                "requires_explanation": True,
                 "reward": {"partial": 0.2, "reasoning": 0.2, "completion": 0.25, "penalty": 0.1},
                 "observation": {
                     "context": {
@@ -55,6 +59,8 @@ def build_easy_scenario(difficulty_level: int) -> dict:
                 "reasoning_keywords": ["mfa", "credential", "review", "firewall"],
                 "completion_keywords": ["monitor", "recover", "rotate", "reset"],
                 "penalty_keywords": ["do nothing", "reboot only"],
+                "ordered_keywords_groups": [["block"], ["reset", "rotate"], ["monitor", "review"]],
+                "requires_explanation": True,
                 "reward": {"partial": 0.2, "reasoning": 0.15, "completion": 0.35, "penalty": 0.1},
                 "observation": {
                     "constraints": [

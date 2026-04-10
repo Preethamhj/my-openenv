@@ -13,6 +13,8 @@ def build_medium_scenario(difficulty_level: int) -> dict:
                 "reasoning_keywords": ["internet-facing", "unauthenticated", "exploit"],
                 "completion_keywords": ["prioritize", "critical", "patch"],
                 "penalty_keywords": ["ignore", "informational"],
+                "ordered_keywords_groups": [["cve-2026-44210"], ["unauthenticated", "remote code execution"], ["critical", "patch"]],
+                "requires_explanation": True,
                 "reward": {"partial": 0.25, "reasoning": 0.2, "completion": 0.25, "penalty": 0.15},
                 "observation": {
                     "report": [
@@ -41,6 +43,8 @@ def build_medium_scenario(difficulty_level: int) -> dict:
                 "reasoning_keywords": ["lateral movement", "customer access", "blast radius"],
                 "completion_keywords": ["escalate", "change window", "owner"],
                 "penalty_keywords": ["defer", "next quarter"],
+                "ordered_keywords_groups": [["vpn", "external"], ["blast radius", "customer access"], ["escalate", "change window"]],
+                "requires_explanation": True,
                 "reward": {"partial": 0.2, "reasoning": 0.2, "completion": 0.25, "penalty": 0.1},
                 "observation": {
                     "business_context": {
@@ -57,6 +61,8 @@ def build_medium_scenario(difficulty_level: int) -> dict:
                 "reasoning_keywords": ["waf", "ip allowlist", "validate"],
                 "completion_keywords": ["rollback", "scan", "verify", "deploy"],
                 "penalty_keywords": ["wait", "accept risk"],
+                "ordered_keywords_groups": [["patch"], ["restrict", "allowlist"], ["validate", "scan"]],
+                "requires_explanation": True,
                 "reward": {"partial": 0.2, "reasoning": 0.15, "completion": 0.35, "penalty": 0.1},
                 "observation": {
                     "constraints": [
